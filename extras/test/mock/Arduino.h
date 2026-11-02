@@ -10,10 +10,14 @@ using __FlashStringHelper = char;
 #define INPUT 0
 #define OUTPUT 1
 #define INPUT_PULLUP 2
+#define INPUT_PULLDOWN 3
 #define LOW 0
 #define HIGH 1
 #define CHANGE 1
 #define NOT_AN_INTERRUPT -1
+#ifdef ESP32
+#define IRAM_ATTR
+#endif
 // Как в настоящем Arduino.h: эти слова заняты макросами, имена в библиотеке не должны с ними пересекаться
 #define PULLUP 0x3
 #define PULLDOWN 0x4
@@ -23,7 +27,8 @@ inline uint32_t g_now = 0;
 inline uint8_t g_level[64];
 inline void (*g_isr[64])();
 inline uint32_t millis() { return g_now; }
-inline void pinMode(uint8_t p, uint8_t) { g_level[p] = 1; }   // подтяжка: пин в покое HIGH
+inline uint8_t g_mode[64];
+inline void pinMode(uint8_t p, uint8_t m) { g_mode[p] = m; g_level[p] = (m == INPUT_PULLDOWN) ? 0 : 1; }   // подтяжка: пин в покое HIGH, у подтяжки к земле LOW
 inline int digitalRead(uint8_t p) { return g_level[p]; }
 inline int digitalPinToInterrupt(uint8_t p) { return (p == 2 || p == 3 || p >= 20) ? p : NOT_AN_INTERRUPT; }
 inline void attachInterrupt(int n, void (*fn)(), int) { g_isr[n] = fn; }

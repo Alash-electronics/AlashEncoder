@@ -21,16 +21,29 @@ AlashEncoder::~AlashEncoder() {
     if (s_inst[i] == this) s_inst[i] = nullptr;   // место свободно для другого энкодера
 }
 
+// Режим пина по выбору: подтяжка платы, внешняя (просто вход) или к земле (там, где она есть)
+static void setupPin(uint8_t pin, AlashEncoder::PinMode m) {
+  if (m == AlashEncoder::ENC_PULLUP) pinMode(pin, INPUT_PULLUP);
+#if defined(INPUT_PULLDOWN)
+  else if (m == AlashEncoder::ENC_PULLDOWN) pinMode(pin, INPUT_PULLDOWN);
+#endif
+  else pinMode(pin, INPUT);
+}
+
 bool AlashEncoder::begin(bool useInterrupts) {
   _err = ERR_OK;
-  pinMode(_a, INPUT_PULLUP);
-  pinMode(_b, INPUT_PULLUP);
-  if (_btn >= 0) pinMode(_btn, INPUT_PULLUP);
+  setupPin(_a, _pm);
+  setupPin(_b, _pm);
+  if (_btn >= 0) setupPin(_btn, _bm);
+#if defined(ESP32)
+  if ((_pm == ENC_PULLUP && ((_a >= 34 && _a <= 39) || (_b >= 34 && _b <= 39))) || (_btn >= 0 && _bm == ENC_PULLUP && _btn >= 34 && _btn <= 39))
+    _err = ERR_NO_PULLUP;                                  // эти пины только на вход, без подтяжки: пока работает, но уровни «в воздухе»
+#endif
   _prev = readAB();
   _acc = 0;
   _lastClickAt = millis();
   if (_btn >= 0) {
-    _bRaw = _bDown = (digitalRead(_btn) == LOW);
+    _bRaw = _bDown = (digitalRead(_btn) == (_bLow ? LOW : HIGH));
     _bRawAt = _bDownAt = millis();
     _longFired = _bDown;                   // зажата при старте: без событий
   }
@@ -90,7 +103,7 @@ void AlashEncoder::pollRotation() {
 void AlashEncoder::pollButton() {
   if (_btn < 0) return;
   uint32_t now = millis();
-  bool raw = (digitalRead(_btn) == LOW);
+  bool raw = (digitalRead(_btn) == (_bLow ? LOW : HIGH));
   if (raw != _bRaw) {
     _bRaw = raw;
     _bRawAt = now;
@@ -184,6 +197,10 @@ const __FlashStringHelper *AlashEncoder::errorText() {
       return T("Для прерываний нужны пины с прерыванием (Uno / Nano: только 2 и 3) и не больше 4 энкодеров. Используйте begin() без аргумента или другие пины",
                "Үзіліс үшін үзілісі бар пиндер керек (Uno / Nano: тек 2 және 3) және 4 энкодерден көп емес. begin()-ді аргументсіз қолданыңыз немесе басқа пиндер таңдаңыз",
                "Interrupts need pins with interrupt support (Uno / Nano: only 2 and 3) and at most 4 encoders. Use begin() without arguments or other pins");
+    case ERR_NO_PULLUP:
+      return T("У этих пинов ESP32 (GPIO34-39) нет внутренней подтяжки: поставьте резисторы 10 кОм к 3.3 В на A, B и кнопку и вызовите setPinMode(ENC_EXTERNAL) и setButtonMode(ENC_EXTERNAL), либо выберите другие пины. У модуля KY-040 резисторы уже стоят: достаточно ENC_EXTERNAL.",
+               "ESP32-нің бұл пиндерінде (GPIO34-39) ішкі тартқыш жоқ: A, B және түймеге 3.3 В-қа 10 кОм резисторлар қойып, setPinMode(ENC_EXTERNAL) және setButtonMode(ENC_EXTERNAL) шақырыңыз немесе басқа пиндер таңдаңыз. KY-040 модулінде резисторлар бар: ENC_EXTERNAL жеткілікті.",
+               "These ESP32 pins (GPIO34-39) have no internal pull-up: add 10 kOhm resistors to 3.3 V on A, B and the button and call setPinMode(ENC_EXTERNAL) and setButtonMode(ENC_EXTERNAL), or pick other pins. The KY-040 module already has the resistors: ENC_EXTERNAL is enough.");
   }
   return F("");
 }
@@ -201,7 +218,7 @@ void AlashEncoder::diagnose(Print &out) {
   out.println(digitalRead(_b));
   if (_btn >= 0) {
     out.print(T("Кнопка (SW): ", "Түйме (SW): ", "Button (SW): "));
-    out.println(digitalRead(_btn) == LOW ? T("нажата", "басылған", "pressed") : T("отпущена", "жіберілген", "released"));
+    out.println(digitalRead(_btn) == (_bLow ? LOW : HIGH) ? T("нажата", "басылған", "pressed") : T("отпущена", "жіберілген", "released"));
   }
   out.print(T("Значение: ", "Мәні: ", "Value: "));
   out.println((int)value());

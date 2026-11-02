@@ -20,6 +20,7 @@ void loop() {
 ```
 
 ### Что умеет
+- **Любая схема подключения:** подтяжка платы, внешние резисторы (как у KY-040) или к земле (`setPinMode()`, `setButtonMode()`); кнопка к GND или к питанию; пины ESP32 GPIO34-39 с внешними резисторами.
 - **Щелчки без дребезга:** алгоритм по коду Грея отбрасывает помехи и учитывает пропущенные состояния при быстром вращении; потерянный импульс не сдвигает счёт навсегда.
 - **Значение:** `value()`, `setValue()`, `setStep(n)`, `setLimits(min, max)` и `setLimits(min, max, true)` для меню по кругу.
 - **События:** `changed()`, `turnedRight()`, `turnedLeft()`, `delta()`.
@@ -74,6 +75,7 @@ void loop() {
 ```
 
 ### Мүмкіндіктері
+- **Кез келген қосу сұлбасы:** тақта тартқышы, сыртқы резисторлар (KY-040 сияқты) немесе жерге (`setPinMode()`, `setButtonMode()`); түйме GND-ға немесе қуатқа; сыртқы резисторлы ESP32 GPIO34-39 пиндері.
 - **Шерткілер, діріл жоқ:** Грей коды бойынша алгоритм кедергілерді сүзеді, тез бұрағанда өткізіп алынған күйлерді ескереді.
 - **Мән:** `value()`, `setValue()`, `setStep(n)`, `setLimits(min, max)`, айналдыру үшін `setLimits(min, max, true)`.
 - **Оқиғалар:** `changed()`, `turnedRight()`, `turnedLeft()`, `delta()`.
@@ -115,6 +117,7 @@ void loop() {
 ```
 
 ### Features
+- **Any wiring scheme:** the board pull-up, external resistors (like the KY-040) or pull-down (`setPinMode()`, `setButtonMode()`); a button to GND or to the supply; ESP32 GPIO34-39 pins with external resistors.
 - **Clean clicks:** a Gray-code algorithm rejects noise and handles skipped states on fast turns; a lost pulse never shifts the count for good.
 - **Value:** `value()`, `setValue()`, `setStep(n)`, `setLimits(min, max)`, and `setLimits(min, max, true)` for wrap-around menus.
 - **Events:** `changed()`, `turnedRight()`, `turnedLeft()`, `delta()`.

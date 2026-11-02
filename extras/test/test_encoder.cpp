@@ -1,6 +1,7 @@
 // Тесты AlashEncoder без железа (уровни пинов и время задаёт тест):
 //   g++ -std=c++17 -Wall -I mock -I ../../src test_encoder.cpp ../../src/AlashEncoder.cpp && ./a.out
 #include <stdio.h>
+#include <string>
 #include "Arduino.h"
 #include "AlashEncoder.h"
 
@@ -128,6 +129,37 @@ int main() {
   // 11) тексты
   e.setLanguage(AlashEncoder::LANG_KK);
   e.diagnose(*(new Print));
+
+
+  // ===== Режимы подтяжки, кнопка с активным HIGH, пины ESP32 без подтяжки =====
+  {
+    reset(); AlashEncoder a(4, 5, 6); a.begin();
+    CHECK(g_mode[4] == INPUT_PULLUP && g_mode[5] == INPUT_PULLUP && g_mode[6] == INPUT_PULLUP);                  // по умолчанию подтяжка платы
+    reset(); AlashEncoder b(4, 5, 6); b.setPinMode(AlashEncoder::ENC_EXTERNAL); b.setButtonMode(AlashEncoder::ENC_EXTERNAL); CHECK(b.begin());
+    CHECK(g_mode[4] == INPUT && g_mode[5] == INPUT && g_mode[6] == INPUT);                                       // внешние резисторы: просто вход
+    reset(); AlashEncoder c(4, 5, 6); c.setPinMode(AlashEncoder::ENC_PULLDOWN); c.setButtonMode(AlashEncoder::ENC_PULLDOWN, false); c.begin();
+    CHECK(g_mode[4] == INPUT_PULLDOWN && g_mode[6] == INPUT_PULLDOWN && g_level[4] == 0 && g_level[6] == 0);   // подтяжка к земле: в покое LOW
+
+    // кнопка к питанию (активный HIGH): нажатие даёт HIGH
+    reset(); AlashEncoder d(4, 5, 6); d.setButtonMode(AlashEncoder::ENC_PULLDOWN, false); d.begin(); g_level[6] = 0;
+    CHECK(!d.isPressed()); setPin(6, 1); for (int i = 0; i < 10; i++) { g_now += 10; d.update(); }
+    CHECK(d.pressed() && d.isPressed());
+    setPin(6, 0); for (int i = 0; i < 10; i++) { g_now += 10; d.update(); }
+    CHECK(d.clicked() && !d.isPressed());
+    // кнопка к земле (активный LOW) по умолчанию работает как раньше
+    reset(); AlashEncoder e(4, 5, 6); e.begin(); g_now += 100; setPin(6, 0); for (int i = 0; i < 10; i++) { g_now += 10; e.update(); } CHECK(e.isPressed());
+
+    // вращение не зависит от режима подтяжки: те же щелчки при подтяжке к земле (уровни в покое LOW)
+    reset(); AlashEncoder f(4, 5); f.setPinMode(AlashEncoder::ENC_PULLDOWN); f.begin(); setPin(4, 1); setPin(5, 1); f.update(); f.setValue(0);   // привести к состоянию 11 и обнулить
+    for (int i = 0; i < 3; i++) clickRight(f, 4, 5);
+    CHECK(f.value() == 3);
+  }
+#if defined(ESP32)
+  { reset(); AlashEncoder g(34, 35); CHECK(!g.begin() && g.error() == AlashEncoder::ERR_NO_PULLUP);
+    g.setLanguage(AlashEncoder::LANG_RU); std::string ru = (const char *)g.errorText(); g.setLanguage(AlashEncoder::LANG_KK); std::string kk = (const char *)g.errorText(); g.setLanguage(AlashEncoder::LANG_EN); std::string en = (const char *)g.errorText();
+    CHECK(ru.size() > 20 && kk.size() > 20 && en.size() > 20 && ru != kk && kk != en);
+    reset(); AlashEncoder h(34, 35); h.setPinMode(AlashEncoder::ENC_EXTERNAL); CHECK(h.begin() && h.error() == AlashEncoder::ERR_OK); }   // внешние резисторы: ошибки нет
+#endif
 
   if (fails) { printf("FAILED: %d\n", fails); return 1; }
   printf("ALL TESTS PASSED\n");

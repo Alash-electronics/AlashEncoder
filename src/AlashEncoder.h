@@ -19,8 +19,11 @@ class AlashEncoder {
  public:
   enum Error : uint8_t {
     ERR_OK = 0,
-    ERR_NO_INTERRUPT   // на этом пине нет прерываний (Uno / Nano: только 2 и 3)
+    ERR_NO_INTERRUPT,  // на этом пине нет прерываний (Uno / Nano: только 2 и 3)
+    ERR_NO_PULLUP      // у этого пина ESP32 (GPIO34-39) нет внутренней подтяжки: нужны внешние резисторы и режим ENC_EXTERNAL
   };
+  // Подтяжка пина: ENC_PULLUP (внутри платы, по умолчанию), ENC_EXTERNAL (резисторы на модуле или свои: у KY-040 они уже есть), ENC_PULLDOWN (к земле: только ESP32)
+  enum PinMode : uint8_t { ENC_PULLUP = 0, ENC_EXTERNAL, ENC_PULLDOWN };
   enum Language : uint8_t { LANG_RU = 0, LANG_KK = 1, LANG_EN = 2 };
 
   // pinA, pinB: два выхода энкодера (CLK и DT). pinButton: кнопка (SW), необязательно (-1 = нет).
@@ -43,6 +46,7 @@ class AlashEncoder {
   void setAcceleration(bool on) { _accel = on; }               // быстрое вращение меняет значение сильнее
   void setStepsPerClick(uint8_t n) { _perClick = (n == 1 || n == 2) ? n : 4; }   // 4 (по умолчанию), 2 или 1 импульс на щелчок
   void reverse(bool on = true) { _reversed = on; }             // поменять направление (вместо перепайки A и B)
+  void setPinMode(PinMode mode) { _pm = mode; }                // подтяжка пинов A и B (до begin())
 
   // ---- Кнопка (если указан pinButton) ----------------------------------------------
   bool isPressed();                        // кнопка нажата сейчас
@@ -50,6 +54,7 @@ class AlashEncoder {
   bool clicked();                          // короткий клик (если при нажатии крутили, клика нет)
   bool longPressed();                      // держат дольше setLongPressMs (один раз)
   void setLongPressMs(uint16_t ms) { _longMs = ms; }           // по умолчанию 800
+  void setButtonMode(PinMode mode, bool activeLow = true) { _bm = mode; _bLow = activeLow; }   // подтяжка кнопки и уровень нажатой (до begin()): активный LOW для кнопки к GND, HIGH для кнопки к питанию
 
   // ---- Диагностика -----------------------------------------------------------------
   void setLanguage(Language lang) { _lang = lang; }
@@ -63,6 +68,8 @@ class AlashEncoder {
  private:
   uint8_t _a, _b;
   int8_t _btn;
+  PinMode _pm = ENC_PULLUP, _bm = ENC_PULLUP;
+  bool _bLow = true;
   bool _started = false, _irq = false;
   Error _err = ERR_OK;
   Language _lang = LANG_RU;

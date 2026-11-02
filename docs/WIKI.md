@@ -61,6 +61,7 @@ void loop() {
 | `setStepsPerClick(n)` | 1, 2 или 4 импульса на щелчок |
 | `reverse()` | Поменять направление |
 | `clicked() / pressed() / longPressed()` | Кнопка энкодера (SW) |
+| `setPinMode(mode) / setButtonMode(mode, activeLow)` | Подтяжка пинов: ENC_PULLUP (плата), ENC_EXTERNAL (внешние резисторы), ENC_PULLDOWN (к земле, ESP32); кнопка к GND или к питанию |
 | `diagnose(Serial)` | Самопроверка |
 
 ### Если что-то не работает
@@ -75,6 +76,14 @@ void loop() {
 **Ошибка: на этом пине нет прерываний**
 
 На Uno и Nano прерывания только на пинах 2 и 3. Используйте их или режим без прерываний `begin()`.
+
+**На ESP32 пины 34-39 не работают с энкодером**
+
+У GPIO34-39 нет внутренней подтяжки (это только входы). Поставьте резисторы 10 кОм к 3.3 В на A, B и кнопку и вызовите `setPinMode(ENC_EXTERNAL)` и `setButtonMode(ENC_EXTERNAL)`: у модуля KY-040 резисторы уже есть. Библиотека скажет об этом ошибкой ERR_NO_PULLUP.
+
+**Кнопка энкодера включена наоборот (нажатие даёт HIGH)**
+
+Если кнопка соединяет пин с питанием, вызовите `setButtonMode(ENC_PULLDOWN, false)` (ESP32) или поставьте внешний резистор к GND и `setButtonMode(ENC_EXTERNAL, false)`.
 
 ### Чем отличается от других библиотек
 Мы посмотрели Encoder (Paul Stoffregen), RotaryEncoder (Matthias Hertel), Ai Esp32 Rotary Encoder и GyverEncoder:
@@ -145,6 +154,7 @@ void loop() {
 | `setStepsPerClick(n)` | Шертпеге 1, 2 не 4 импульс |
 | `reverse()` | Бағытты ауыстыру |
 | `clicked() / pressed() / longPressed()` | Энкодер түймесі (SW) |
+| `setPinMode(mode) / setButtonMode(mode, activeLow)` | Пиндер тартқышы және түйме деңгейі |
 | `diagnose(Serial)` | Өзін тексеру |
 
 ### Бірдеңе жұмыс істемесе
@@ -160,11 +170,21 @@ A және B-ны ауыстырудың орнына `encoder.reverse()` шақ
 
 Uno мен Nano-да үзіліс тек 2 және 3 пиндерде. Оларды қолданыңыз не үзіліссіз `begin()`.
 
+**ESP32-де 34-39 пиндері энкодермен жұмыс істемейді**
+
+GPIO34-39 пиндерінде ішкі тартқыш жоқ (тек кіріс). A, B және түймеге 3.3 В-қа 10 кОм резисторлар қойып, `setPinMode(ENC_EXTERNAL)` және `setButtonMode(ENC_EXTERNAL)` шақырыңыз: KY-040 модулінде резисторлар бар.
+
+**Энкодер түймесі кері қосылған (басқанда HIGH береді)**
+
+Түйме пинді қуатқа қосса, `setButtonMode(ENC_PULLDOWN, false)` (ESP32) шақырыңыз немесе GND-ға сыртқы резистор қойып `setButtonMode(ENC_EXTERNAL, false)`.
+
 ### Өзін-өзі тексеру
 Кітапханада `diagnose(Serial)` бар: тақта не көргенін басып шығарады және нені тексеру керегін айтады. Кеңес тілі: `setLanguage(LANG_RU / LANG_KK / LANG_EN)`.
 
 ### Мысалдар
 `Basic`, `Menu`, `Volume`, `Interrupts`, `Diagnose`.
+
+Толық нұсқаулық: [docs/WIKI.md](docs/WIKI.md).
 
 ---
 
@@ -222,6 +242,7 @@ void loop() {
 | `setStepsPerClick(n)` | 1, 2 or 4 pulses per click |
 | `reverse()` | Swap direction |
 | `clicked() / pressed() / longPressed()` | The encoder button (SW) |
+| `setPinMode(mode) / setButtonMode(mode, activeLow)` | Pin pulls: ENC_PULLUP (board), ENC_EXTERNAL (external resistors), ENC_PULLDOWN (to ground, ESP32); a button to GND or to supply |
 | `diagnose(Serial)` | Self-check |
 
 ### If something does not work
@@ -237,11 +258,21 @@ Call `encoder.reverse()` instead of swapping A and B.
 
 On Uno and Nano interrupts are only on pins 2 and 3. Use them or the polling mode `begin()`.
 
+**On ESP32 pins 34-39 do not work with the encoder**
+
+GPIO34-39 have no internal pull-up (they are input-only). Add 10 kOhm resistors to 3.3 V on A, B and the button and call `setPinMode(ENC_EXTERNAL)` and `setButtonMode(ENC_EXTERNAL)`: the KY-040 module already has the resistors. The library reports it with ERR_NO_PULLUP.
+
+**The encoder button works the other way (a press gives HIGH)**
+
+If the button joins the pin to the supply call `setButtonMode(ENC_PULLDOWN, false)` (ESP32) or add an external resistor to GND and call `setButtonMode(ENC_EXTERNAL, false)`.
+
 ### Self-check
 The library has `diagnose(Serial)`: it prints what the board sees and tells what to check. Tips language: `setLanguage(LANG_RU / LANG_KK / LANG_EN)`.
 
 ### Examples
 `Basic`, `Menu`, `Volume`, `Interrupts`, `Diagnose`.
+
+Full guide: [docs/WIKI.md](docs/WIKI.md).
 
 ---
 
