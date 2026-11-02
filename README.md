@@ -54,6 +54,8 @@ void loop() {
 ### Тесты
 Вращение в обе стороны, помехи, пропущенные состояния, границы, ускорение, кнопка и прерывания проверены без железа: `extras/test`.
 
+Подробное руководство: [docs/WIKI.md](docs/WIKI.md).
+
 ---
 
 ## Қазақша
@@ -93,6 +95,8 @@ void loop() {
 ### Мысалдар
 `Basic`, `Menu`, `Volume`, `Interrupts`, `Diagnose`.
 
+Толық нұсқаулық: [docs/WIKI.md](docs/WIKI.md).
+
 ---
 
 ## English
@@ -131,6 +135,8 @@ void loop() {
 
 ### Examples
 `Basic`, `Menu`, `Volume`, `Interrupts`, `Diagnose`.
+
+Full guide: [docs/WIKI.md](docs/WIKI.md).
 
 ### License
 MIT, Alash Electronics.
