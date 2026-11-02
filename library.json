@@ -1,6 +1,6 @@
 {
   "name": "AlashEncoder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easy rotary encoder (KY-040) library: value with limits, acceleration, button, polling or interrupts, clear tips (ru/kk/en)",
   "keywords": "encoder, rotary encoder, KY-040, knob, button, interrupt, input",
   "repository": { "type": "git", "url": "https://github.com/Alash-electronics/AlashEncoder" },

@@ -1,5 +1,9 @@
-// AlashEncoder: энкодер не работает или считает не так? Скетч покажет уровни на пинах и подскажет настройки.
-// Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [ru] AlashEncoder: энкодер не работает или считает не так? Скетч покажет уровни на пинах и подскажет настройки.
+//      Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [kk] AlashEncoder: энкодер жұмыс істемей ме немесе қате санай ма? Скетч пиндердегі деңгейлерді көрсетеді және баптауларды ұсынады.
+//      Пиндер: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [en] AlashEncoder: the encoder does not work or counts wrongly? The sketch shows the pin levels and suggests settings.
+//      Pins: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
 #if defined(ESP32)
 const uint8_t PIN_A = 25, PIN_B = 26, PIN_SW = 27;
 #elif defined(ESP8266)

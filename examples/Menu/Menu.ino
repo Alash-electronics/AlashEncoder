@@ -1,6 +1,12 @@
-// AlashEncoder: меню на энкодере. Крутите, чтобы выбрать пункт, нажмите, чтобы выбрать.
-// Пункты по кругу (после последнего снова первый).
-// Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [ru] AlashEncoder: меню на энкодере. Крутите, чтобы выбрать пункт, нажмите, чтобы выбрать.
+//      Пункты по кругу (после последнего снова первый).
+//      Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [kk] AlashEncoder: энкодердегі мәзір. Тармақты таңдау үшін бұраңыз, таңдау үшін басыңыз.
+//      Тармақтар шеңбер бойымен жүреді (соңғыдан кейін қайтадан біріншісі).
+//      Пиндер: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [en] AlashEncoder: a menu on the encoder. Turn to choose an item, press to select.
+//      The items wrap around (after the last one comes the first again).
+//      Pins: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
 #if defined(ESP32)
 const uint8_t PIN_A = 25, PIN_B = 26, PIN_SW = 27;
 #elif defined(ESP8266)

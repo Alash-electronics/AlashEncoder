@@ -1,6 +1,12 @@
-// AlashEncoder: регулятор громкости или яркости 0-100 %. Быстрое вращение меняет значение сильнее (ускорение),
-// нажатие на ручку включает и выключает звук (значение запоминается).
-// Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [ru] AlashEncoder: регулятор громкости или яркости 0-100 %. Быстрое вращение меняет значение сильнее (ускорение),
+//      нажатие на ручку включает и выключает звук (значение запоминается).
+//      Пины: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [kk] AlashEncoder: дыбыс немесе жарықтық реттегіші 0-100 %. Жылдам бұрау мәнді күштірек өзгертеді (үдеу),
+//      тұтқаны басу дыбысты өшіреді және қосады (мән есте қалады).
+//      Пиндер: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
+// [en] AlashEncoder: a volume or brightness control 0-100 %. Fast turning changes the value more (acceleration),
+//      pressing the knob mutes and unmutes (the value is remembered).
+//      Pins: Uno / Nano  CLK=2, DT=3, SW=4;  ESP32  CLK=25, DT=26, SW=27;  ESP8266  CLK=D5, DT=D6, SW=D7.
 #if defined(ESP32)
 const uint8_t PIN_A = 25, PIN_B = 26, PIN_SW = 27;
 #elif defined(ESP8266)
